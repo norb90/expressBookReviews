@@ -102,11 +102,11 @@ public_users.get('/async/books', async function (req, res) {
     try {
         const response = await axios.get('http://localhost:5000/');
 
-        return res.status(300).json(response.data);
+        return res.status(404).json(response.data);
 
     } catch (error) {
 
-        return res.status(300).json({
+        return res.status(404).json({
             message: error.message
         });
 
@@ -124,11 +124,11 @@ public_users.get('/async/isbn/:isbn', async function (req, res) {
             `http://localhost:5000/isbn/${isbn}`
         );
 
-        return res.status(300).json(response.data);
+        return res.status(404).json(response.data);
 
     } catch (error) {
 
-        return res.status(300).json({
+        return res.status(404).json({
             message: error.message
         });
 
@@ -144,13 +144,13 @@ public_users.get('/async/author/:author', function (req, res) {
 
         .then((response) => {
 
-            return res.status(300).json(response.data);
+            return res.status(404).json(response.data);
 
         })
 
         .catch((error) => {
 
-            return res.status(300).json({
+            return res.status(404).json({
                 message: error.message
             });
 
@@ -166,13 +166,13 @@ public_users.get('/async/title/:title', function (req, res) {
 
         .then((response) => {
 
-            return res.status(300).json(response.data);
+            return res.status(404).json(response.data);
 
         })
 
         .catch((error) => {
 
-            return res.status(300).json({
+            return res.status(404).json({
                 message: error.message
             });
 
