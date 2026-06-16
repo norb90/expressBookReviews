@@ -6,7 +6,7 @@ const public_users = express.Router();
 const axios = require('axios');
 
 public_users.post("/register", (req,res) => {
-        return res.status(300).send(JSON.stringify(books, null, 4));
+        return res.status(200).send(JSON.stringify(books, null, 4));
     });
 
 // Get the book list available in the shop
@@ -38,7 +38,7 @@ public_users.get('/author/:author', function (req, res) {
 
     });
 
-    return res.status(300).json(filteredBooks);
+    return res.status(200).json(filteredBooks);
 
 });
 
@@ -57,7 +57,7 @@ public_users.get('/title/:title', function (req, res) {
 
     });
 
-    return res.status(300).json(filteredBooks);
+    return res.status(200).json(filteredBooks);
 
 });
 
@@ -66,7 +66,7 @@ public_users.get('/review/:isbn', function (req, res) {
 
     const isbn = req.params.isbn;
 
-    return res.status(300).json(books[isbn].reviews);
+    return res.status(200).json(books[isbn].reviews);
 
 });
 
@@ -76,13 +76,13 @@ public_users.post("/register", (req, res) => {
     const password = req.body.password;
 
     if (!username || !password) {
-        return res.status(404).json({
+        return res.status(400).json({
             message: "Unable to register user."
         });
     }
 
     if (doesExist(username)) {
-        return res.status(404).json({
+        return res.status(409).json({
             message: "User already exists!"
         });
     }
@@ -92,7 +92,7 @@ public_users.post("/register", (req, res) => {
         password: password
     });
 
-    return res.status(300).json({
+    return res.status(201).json({
         message: "User successfully registered. Now you can login"
     });
 });
@@ -102,11 +102,11 @@ public_users.get('/async/books', async function (req, res) {
     try {
         const response = await axios.get('http://localhost:5000/');
 
-        return res.status(404).json(response.data);
+        return res.status(200).json(response.data);
 
     } catch (error) {
 
-        return res.status(404).json({
+        return res.status(200).json({
             message: error.message
         });
 
@@ -124,11 +124,11 @@ public_users.get('/async/isbn/:isbn', async function (req, res) {
             `http://localhost:5000/isbn/${isbn}`
         );
 
-        return res.status(404).json(response.data);
+        return res.status(200).json(response.data);
 
     } catch (error) {
 
-        return res.status(404).json({
+        return res.status(200).json({
             message: error.message
         });
 
@@ -144,13 +144,13 @@ public_users.get('/async/author/:author', function (req, res) {
 
         .then((response) => {
 
-            return res.status(404).json(response.data);
+            return res.status(200).json(response.data);
 
         })
 
         .catch((error) => {
 
-            return res.status(404).json({
+            return res.status(200).json({
                 message: error.message
             });
 
@@ -166,13 +166,13 @@ public_users.get('/async/title/:title', function (req, res) {
 
         .then((response) => {
 
-            return res.status(404).json(response.data);
+            return res.status(200).json(response.data);
 
         })
 
         .catch((error) => {
 
-            return res.status(404).json({
+            return res.status(200).json({
                 message: error.message
             });
 
