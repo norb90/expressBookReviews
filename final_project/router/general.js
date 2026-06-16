@@ -5,6 +5,35 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 const axios = require('axios');
 
+const getAllBooks = async () => {
+    const response = await axios.get("http://localhost:5000/");
+    return response.data;
+};
+
+const filterByAuthor = (books, author) => {
+    let result = [];
+
+    Object.keys(books).forEach((isbn) => {
+        if (books[isbn].author === author) {
+            result.push(books[isbn]);
+        }
+    });
+
+    return result;
+};
+
+const filterByTitle = (books, title) => {
+    let result = [];
+
+    Object.keys(books).forEach((isbn) => {
+        if (books[isbn].title === title) {
+            result.push(books[isbn]);
+        }
+    });
+
+    return result;
+};
+
 public_users.post("/register", (req,res) => {
         return res.status(200).send(JSON.stringify(books, null, 4));
     });
@@ -97,30 +126,22 @@ public_users.post("/register", (req, res) => {
     });
 });
 
-public_users.get('/async/title/:title', function (req, res) {
+public_users.get('/async/author/:author', function (req, res) {
 
-    const title = req.params.title;
+    const author = req.params.author;
 
     axios.get('http://localhost:5000/')
         .then(response => {
 
-            const books = response.data;
+            const filtered = filterByAuthor(response.data, author);
 
-            let filteredBooks = [];
-
-            Object.keys(books).forEach((isbn) => {
-                if (books[isbn].title === title) {
-                    filteredBooks.push(books[isbn]);
-                }
-            });
-
-            if (filteredBooks.length > 0) {
-                return res.status(200).json(filteredBooks);
-            } else {
-                return res.status(404).json({
-                    message: "Title not found"
-                });
+            if (filtered.length > 0) {
+                return res.status(200).json(filtered);
             }
+
+            return res.status(404).json({
+                message: "Author not found"
+            });
 
         })
         .catch(error => {
@@ -135,16 +156,15 @@ public_users.get('/async/isbn/:isbn', async function (req, res) {
     try {
         const isbn = req.params.isbn;
 
-        const response = await axios.get('http://localhost:5000/');
-        const books = response.data;
+        const books = await getAllBooks();
 
         if (books[isbn]) {
             return res.status(200).json(books[isbn]);
-        } else {
-            return res.status(404).json({
-                message: "ISBN not found"
-            });
         }
+
+        return res.status(404).json({
+            message: "ISBN not found"
+        });
 
     } catch (error) {
         return res.status(500).json({
@@ -160,23 +180,15 @@ public_users.get('/async/title/:title', function (req, res) {
     axios.get('http://localhost:5000/')
         .then(response => {
 
-            const books = response.data;
+            const filtered = filterByTitle(response.data, title);
 
-            let filteredBooks = [];
-
-            Object.keys(books).forEach((isbn) => {
-                if (books[isbn].title === title) {
-                    filteredBooks.push(books[isbn]);
-                }
-            });
-
-            if (filteredBooks.length > 0) {
-                return res.status(200).json(filteredBooks);
-            } else {
-                return res.status(404).json({
-                    message: "Title not found"
-                });
+            if (filtered.length > 0) {
+                return res.status(200).json(filtered);
             }
+
+            return res.status(404).json({
+                message: "Title not found"
+            });
 
         })
         .catch(error => {
