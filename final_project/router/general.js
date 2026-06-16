@@ -97,87 +97,93 @@ public_users.post("/register", (req, res) => {
     });
 });
 
-public_users.get('/async/books', async function (req, res) {
+public_users.get('/async/title/:title', function (req, res) {
 
-    try {
-        const response = await axios.get('http://localhost:5000/');
+    const title = req.params.title;
 
-        return res.status(200).json(response.data);
+    axios.get('http://localhost:5000/')
+        .then(response => {
 
-    } catch (error) {
+            const books = response.data;
 
-        return res.status(200).json({
-            message: error.message
+            let filteredBooks = [];
+
+            Object.keys(books).forEach((isbn) => {
+                if (books[isbn].title === title) {
+                    filteredBooks.push(books[isbn]);
+                }
+            });
+
+            if (filteredBooks.length > 0) {
+                return res.status(200).json(filteredBooks);
+            } else {
+                return res.status(404).json({
+                    message: "Title not found"
+                });
+            }
+
+        })
+        .catch(error => {
+            return res.status(500).json({
+                message: error.message
+            });
         });
-
-    }
-
 });
 
 public_users.get('/async/isbn/:isbn', async function (req, res) {
 
     try {
-
         const isbn = req.params.isbn;
 
-        const response = await axios.get(
-            `http://localhost:5000/isbn/${isbn}`
-        );
+        const response = await axios.get('http://localhost:5000/');
+        const books = response.data;
 
-        return res.status(200).json(response.data);
+        if (books[isbn]) {
+            return res.status(200).json(books[isbn]);
+        } else {
+            return res.status(404).json({
+                message: "ISBN not found"
+            });
+        }
 
     } catch (error) {
-
-        return res.status(200).json({
+        return res.status(500).json({
             message: error.message
         });
-
     }
-
-});
-
-public_users.get('/async/author/:author', function (req, res) {
-
-    const author = req.params.author;
-
-    axios.get(`http://localhost:5000/author/${author}`)
-
-        .then((response) => {
-
-            return res.status(200).json(response.data);
-
-        })
-
-        .catch((error) => {
-
-            return res.status(200).json({
-                message: error.message
-            });
-
-        });
-
 });
 
 public_users.get('/async/title/:title', function (req, res) {
 
     const title = req.params.title;
 
-    axios.get(`http://localhost:5000/title/${title}`)
+    axios.get('http://localhost:5000/')
+        .then(response => {
 
-        .then((response) => {
+            const books = response.data;
 
-            return res.status(200).json(response.data);
+            let filteredBooks = [];
 
-        })
-
-        .catch((error) => {
-
-            return res.status(200).json({
-                message: error.message
+            Object.keys(books).forEach((isbn) => {
+                if (books[isbn].title === title) {
+                    filteredBooks.push(books[isbn]);
+                }
             });
 
-        });
+            if (filteredBooks.length > 0) {
+                return res.status(200).json(filteredBooks);
+            } else {
+                return res.status(404).json({
+                    message: "Title not found"
+                });
+            }
 
+        })
+        .catch(error => {
+            return res.status(500).json({
+                message: error.message
+            });
+        });
 });
 
 module.exports.general = public_users;
