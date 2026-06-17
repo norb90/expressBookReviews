@@ -5,11 +5,13 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 const axios = require('axios');
 
+// Fetch all books from the local API using Axios
 const getAllBooks = async () => {
     const response = await axios.get("http://localhost:5000/");
     return response.data;
 };
 
+// Filter books by author name
 const filterByAuthor = (books, author) => {
     let result = [];
 
@@ -21,6 +23,8 @@ const filterByAuthor = (books, author) => {
 
     return result;
 };
+
+// Async route: Get books by title using Axios
 
 const filterByTitle = (books, title) => {
     let result = [];
@@ -99,33 +103,40 @@ public_users.get('/review/:isbn', function (req, res) {
 
 });
 
+// POST /register
 public_users.post("/register", (req, res) => {
 
     const username = req.body.username;
     const password = req.body.password;
 
+     // Validate input: ensure both username and password are provided
     if (!username || !password) {
         return res.status(400).json({
             message: "Unable to register user."
         });
     }
 
+    // Check if user already exists
     if (doesExist(username)) {
         return res.status(409).json({
             message: "User already exists!"
         });
     }
 
+    // Add new user to the users array
     users.push({
         username: username,
         password: password
     });
 
+    // Return success response
     return res.status(201).json({
         message: "User successfully registered. Now you can login"
     });
 });
 
+
+// Async route: Get books by author using Axios and async/await pattern
 public_users.get('/async/author/:author', function (req, res) {
 
     const author = req.params.author;
@@ -133,24 +144,29 @@ public_users.get('/async/author/:author', function (req, res) {
     axios.get('http://localhost:5000/')
         .then(response => {
 
-            const filtered = filterByAuthor(response.data, author);
+            // Filter books by author
+            const filteredBooks = filterByAuthor(response.data, author);
 
-            if (filtered.length > 0) {
-                return res.status(200).json(filtered);
+            // If books exist, return them
+            if (filteredBooks.length > 0) {
+                return res.status(200).json(filteredBooks);
             }
 
+            // If no books found, return 404
             return res.status(404).json({
                 message: "Author not found"
             });
 
         })
         .catch(error => {
+            // Handle server or network errors
             return res.status(500).json({
                 message: error.message
             });
         });
 });
 
+// Async route: Get book details by ISBN using async/await and Axios// Async route: Get book details by ISBN using async/await and Axios
 public_users.get('/async/isbn/:isbn', async function (req, res) {
 
     try {
