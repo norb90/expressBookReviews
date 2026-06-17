@@ -151,6 +151,13 @@ public_users.get('/async/author/:author', function (req, res) {
 
     const author = req.params.author;
 
+      // Validate author parameter
+      if (!author || author.trim() === "") {
+        return res.status(400).json({
+            message: "Author parameter is required"
+        });
+    }
+
     axios.get('http://localhost:5000/')
         .then(response => {
 

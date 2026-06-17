@@ -3,8 +3,7 @@ const jwt = require('jsonwebtoken');
 const session = require('express-session')
 const customer_routes = require('./router/auth_users.js').authenticated;
 const genl_routes = require('./router/general.js').general;
-
-let users = []
+const users = require("./users.js");
 
     
     // Check if a user with the given username already exists
